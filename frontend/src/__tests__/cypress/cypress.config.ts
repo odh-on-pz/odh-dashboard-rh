@@ -1,10 +1,13 @@
 import path from 'path';
 import fs from 'fs';
-import { defineConfig } from 'cypress';
-import coverage from '@cypress/code-coverage/task';
+const { defineConfig } = require("cypress");
+const { registerSealightsTasks } = require("sealights-cypress-plugin");
+
+//import { defineConfig } from 'cypress';
+//import coverage from '@cypress/code-coverage/task';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore no types available
-import cypressHighResolution from 'cypress-high-resolution';
+//import cypressHighResolution from 'cypress-high-resolution';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore no types available
 import { beforeRunHook, afterRunHook } from 'cypress-mochawesome-reporter/lib';
@@ -13,9 +16,15 @@ import { interceptSnapshotFile } from '~/__tests__/cypress/cypress/utils/snapsho
 import { setup as setupWebsockets } from '~/__tests__/cypress/cypress/support/websockets';
 import { env, cypressEnv, BASE_URL } from '~/__tests__/cypress/cypress/utils/testConfig';
 
+import {
+  resetCoverage,
+  combineCoverage,
+  coverageReport,
+  slAfterSpec,
+  slGetSealightsExcludedTests // 👈 Import this if it's available from the same package
+} from 'sealights-cypress-plugin' // or your specific Sealights plugin package
+
 const resultsDir = `${env.CY_RESULTS_DIR || 'results'}/${env.CY_MOCK ? 'mocked' : 'e2e'}`;
-const { defineConfig } = require("cypress");
-const { registerSealightsTasks } = require("sealights-cypress-plugin");
 
 export default defineConfig({
   experimentalMemoryManagement: true,
@@ -68,10 +77,38 @@ export default defineConfig({
       : `cypress/tests/e2e/**/*.cy.ts`,
     experimentalInteractiveRunEvents: true,
     setupNodeEvents(on, config) {
-      cypressHighResolution(on, config);
-      coverage(on, config);
+      registerSealightsTasks(on, config);
+     // cypressHighResolution(on, config);
+      //coverage(on, config);
       setupWebsockets(on, config);
       on('task', {
+        slGetSealightsTestSession() {
+          // You may need to integrate this with Sealights SDK or return a mock
+          console.log('Sealights: Getting test session');
+          return null;
+        },
+        slGetSealightsExcludedTests() {
+          return null;
+        },
+        slAfterSpec,
+        slAfterSpec() {
+          return null;
+        },
+        slReportSealightsTestEnd() {
+          // You can log or customize what happens here
+          console.log('Sealights: Test end reported');
+          return null;
+        },
+        // Add any other tasks you're using
+        resetCoverage() {
+          return null;
+        },
+        combineCoverage() {
+          return null;
+        },
+        coverageReport() {
+          return null;
+        },
         readJSON(filePath: string) {
           const absPath = path.resolve(__dirname, filePath);
           if (fs.existsSync(absPath)) {
