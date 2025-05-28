@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
-const { defineConfig } = require("cypress");
-const { registerSealightsTasks } = require("sealights-cypress-plugin");
+const { defineConfig } = require('cypress');
+const { registerSealightsTasks } = require('sealights-cypress-plugin');
 
 //import { defineConfig } from 'cypress';
 //import coverage from '@cypress/code-coverage/task';
@@ -65,10 +65,6 @@ export default defineConfig({
   },
   defaultCommandTimeout: 10000,
   e2e: {
-    experimentalInteractiveRunEvents: true, // If you want to run with 'npm cypress open' and still report coverage
-        setupNodeEvents(on, config) {
-            registerSealightsTasks(on, config);
-        },
     baseUrl: BASE_URL,
     specPattern: env.CY_MOCK
       ? `cypress/tests/mocked/**/*.cy.ts`
@@ -76,29 +72,13 @@ export default defineConfig({
       ? `cypress/tests/mocked/**/*.scy.ts`
       : `cypress/tests/e2e/**/*.cy.ts`,
     experimentalInteractiveRunEvents: true,
+    testIsolation: false,
     setupNodeEvents(on, config) {
       registerSealightsTasks(on, config);
      // cypressHighResolution(on, config);
       //coverage(on, config);
       setupWebsockets(on, config);
       on('task', {
-        slGetSealightsTestSession() {
-          // You may need to integrate this with Sealights SDK or return a mock
-          console.log('Sealights: Getting test session');
-          return null;
-        },
-        slGetSealightsExcludedTests() {
-          return null;
-        },
-        slAfterSpec,
-        slAfterSpec() {
-          return null;
-        },
-        slReportSealightsTestEnd() {
-          // You can log or customize what happens here
-          console.log('Sealights: Test end reported');
-          return null;
-        },
         // Add any other tasks you're using
         resetCoverage() {
           return null;
