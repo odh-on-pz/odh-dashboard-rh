@@ -85,6 +85,7 @@ RUN cd backend && npm cache clean --force && npm ci --omit=dev --omit=optional &
 WORKDIR /usr/src/app/backend
 
 RUN npm install slnodejs
+ENV SL_labId=ods-qe-psi-02
 ENV NODE_OPTIONS="--require ./node_modules/slnodejs/lib/preload.js"
 CMD ["npm", "run", "start"]
 LABEL com.redhat.component="odh-dashboard-container" \
