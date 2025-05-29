@@ -536,6 +536,7 @@ spec:
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: ADDITIONAL_TAGS
         value:
+        - 'sealights-poc-2.16'
         - '{{target_branch}}-{{revision}}'
       runAfter:
       - build-image-index
